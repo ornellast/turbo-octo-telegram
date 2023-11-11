@@ -1,0 +1,31 @@
+spring:
+  application:
+    name: product-catalog-service
+    kafka:
+      config:
+        partitions: 3
+        replicas: 1
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/wk_space_agency_service
+    username: wk_space_agency_service_user
+    password: 'H4rd-2GuezS#SAS_DB!'
+  jpa:
+    hibernate:
+      ddl-auto: create
+  flyway:
+    validate-migration-naming: true
+    enabled: true
+  kafka:
+    bootstrap-servers: localhost:29092
+
+
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: DEBUG
+        type:
+          descriptor:
+            sql:
+              BasicBinder: TRACE

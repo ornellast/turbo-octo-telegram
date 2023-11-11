@@ -1,0 +1,80 @@
+classDiagram
+	class Coordinates
+		Coordinates: latitude Double
+		Coordinates: longitude Double
+
+	class ScannedZone
+		ScannedZone : startPoint Coordinates
+		ScannedZone : endPoint Coordinates
+	
+	class SatelliteType
+		<<enum>> SatelliteType
+		SatelliteType : WEATHER
+		SatelliteType : INFRARED 
+
+	class SatelliteEntity
+		SatelliteEntity : id UUID
+		SatelliteEntity : scannedZones List~ScannedZone~
+		SatelliteEntity : readingFrequency TimeUnit
+		SatelliteEntity : isActive boolean
+		SatelliteEntity : type SatelliteType
+		SatelliteEntity : lastReading long
+
+	class WindRose
+		<<enum>> WindRose
+		WindRose : N
+		WindRose : NNE
+		WindRose : NE
+		WindRose : ENE
+		WindRose : E
+		WindRose : ESE
+		WindRose : SE
+		WindRose : SSE
+		WindRose : S
+		WindRose : SSW
+		WindRose : SW
+		WindRose : WSW
+		WindRose : W
+		WindRose : WNW
+		WindRose : NW
+		WindRose : NNW
+
+	class AbstractSatelliteReadingMessage
+		<<abstract>> AbstractSatelliteReadingMessage
+		AbstractSatelliteReadingMessage : readingId UUID
+		AbstractSatelliteReadingMessage : satelliteId UUID
+		AbstractSatelliteReadingMessage : timestamp long
+		AbstractSatelliteReadingMessage : scannedZones List~ScannedZone~
+
+	class WeatherSatelliteReadingMessage
+		WeatherSatelliteReadingMessage : temperature Double
+		WeatherSatelliteReadingMessage : windSpeed Double
+		WeatherSatelliteReadingMessage : windDirection WindRose
+
+	class ISatelliteService
+		<<Interface>> ISatelliteService
+		%% Executes a reading without change the already scheduled
+		ISatelliteService : executeReading(UUID satelliteId)
+		%% sets isActive as true and schedules readings
+		ISatelliteService : activate(UUID satelliteId) boolean
+		%% sets isActive as false and cancels future readings
+		ISatelliteService : deactivate(UUID satelliteId) boolean
+		%% save and schedule a read
+		ISatelliteService : save(SatelliteEntity satellite) SatelliteEntity
+		%% Deletes a satellite
+		ISatelliteService : decommission(UUID satelliteId)
+		%% Updates a satellite, cancels previous readings and schedules future readings
+		ISatelliteService : updateReadingFrequency(UUID satelliteId, TimeUnit unit, short value)
+
+	class SatelliteReadScheduler
+		<<Service>> SatelliteReadScheduler
+		%% Create the executor %%
+		SatelliteReadScheduler : scheduleReadings(SatelliteEntity satellite) Schedule
+		%% Create and send a kafka message %%
+		SatelliteReadScheduler : read(UUID satelliteId) 
+
+	%% Creates and send the message to kafka topic
+	class SatelliteReadTaskExecutor~T~
+		SatelliteReadTaskExecutor : read() T
+
+	WeatherSatelliteReadingMessage --|> AbstractSatelliteReadingMessage
