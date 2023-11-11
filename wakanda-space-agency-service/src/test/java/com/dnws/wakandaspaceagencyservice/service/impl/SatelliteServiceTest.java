@@ -1,11 +1,12 @@
 package com.dnws.wakandaspaceagencyservice.service.impl;
 
 import com.dnws.wakandaspaceagencyservice.enums.SatelliteType;
-import com.dnws.wakandaspaceagencyservice.model.Coordinates;
+import com.dnws.wakandaspaceagencyservice.model.Coordinate;
 import com.dnws.wakandaspaceagencyservice.model.Frequency;
 import com.dnws.wakandaspaceagencyservice.model.Zone;
 import com.dnws.wakandaspaceagencyservice.persistence.SatelliteEntity;
 import com.dnws.wakandaspaceagencyservice.persistence.repositories.SatelliteRepository;
+import com.dnws.wakandaspaceagencyservice.service.IReadingSchedulerService;
 import com.dnws.wakandaspaceagencyservice.service.ISatelliteService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,9 +34,10 @@ import static org.mockito.Mockito.when;
 class SatelliteServiceTest {
 
     private final SatelliteRepository satelliteRepository = mock();
+    private final IReadingSchedulerService scheduler = mock();
 
     @InjectMocks
-    private ISatelliteService satelliteService = new SatelliteService(satelliteRepository);
+    private ISatelliteService satelliteService = new SatelliteService(satelliteRepository, scheduler);
 
     @Test
     void activate_shouldReturnFalse_when_satelliteIsNotFound() {
@@ -157,8 +159,8 @@ class SatelliteServiceTest {
         entity.setZones(
                 List.of(
                         new Zone(
-                                new Coordinates(Math.random() * 10, Math.random() * 100),
-                                new Coordinates(Math.random() * 10, Math.random() * 100)
+                                new Coordinate(Math.random() * 10, Math.random() * 100),
+                                new Coordinate(Math.random() * 10, Math.random() * 100)
                         )
                 )
         );

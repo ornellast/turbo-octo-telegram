@@ -75,6 +75,7 @@ classDiagram
 
 	%% Creates and send the message to kafka topic
 	class SatelliteReadTaskExecutor~T~
+		SatelliteReadTaskExecutor : ISatelliteService service
 		SatelliteReadTaskExecutor : read() T
 
 	WeatherSatelliteReadingMessage --|> AbstractSatelliteReadingMessage

@@ -1,12 +1,11 @@
 package com.dnws.wakandaspaceagencyservice.model;
 
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class CoordinatesTest {
+class CoordinateTest {
 
     @ParameterizedTest
     @CsvSource(value = {
@@ -19,7 +18,7 @@ class CoordinatesTest {
             Double lon
     ){
         assertThrows(IllegalArgumentException.class, () ->{
-            new Coordinates(lat, lon);
+            new Coordinate(lat, lon);
         });
     }
 }

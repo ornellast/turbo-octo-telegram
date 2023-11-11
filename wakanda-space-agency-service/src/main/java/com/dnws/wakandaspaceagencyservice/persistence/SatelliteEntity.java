@@ -17,6 +17,8 @@ import lombok.Setter;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -48,6 +50,9 @@ public final class SatelliteEntity extends BaseEntity {
     @Column(nullable = false, columnDefinition = "jsonb")
     @JdbcTypeCode(SqlTypes.JSON)
     private List<Zone> zones;
+
+    @Column
+    private Instant lastReading;
 
     public List<Zone> getZones() {
         if(zones != null) {

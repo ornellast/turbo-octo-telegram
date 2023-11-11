@@ -1,10 +1,11 @@
 package com.dnws.wakandaspaceagencyservice.service.impl;
 
-import com.dnws.wakandaspaceagencyservice.model.Coordinates;
+import com.dnws.wakandaspaceagencyservice.model.Coordinate;
 import com.dnws.wakandaspaceagencyservice.model.Frequency;
 import com.dnws.wakandaspaceagencyservice.model.Zone;
 import com.dnws.wakandaspaceagencyservice.persistence.SatelliteEntity;
 import com.dnws.wakandaspaceagencyservice.persistence.repositories.SatelliteRepository;
+import com.dnws.wakandaspaceagencyservice.service.IReadingSchedulerService;
 import com.dnws.wakandaspaceagencyservice.service.ISatelliteService;
 import org.springframework.stereotype.Service;
 
@@ -17,8 +18,16 @@ public class SatelliteService implements ISatelliteService {
 
     private final SatelliteRepository repository;
 
-    public SatelliteService(SatelliteRepository repository) {
+    private final IReadingSchedulerService scheduler;
+
+    public SatelliteService(SatelliteRepository repository, IReadingSchedulerService scheduler) {
         this.repository = repository;
+        this.scheduler = scheduler;
+    }
+
+    @Override
+    public List<SatelliteEntity> findAll() {
+        return repository.findAll();
     }
 
     @Override
@@ -39,26 +48,28 @@ public class SatelliteService implements ISatelliteService {
     @Override
     public Optional<SatelliteEntity> save(SatelliteEntity satellite) {
         if (
-                !isValidScannedZones(satellite.getZones()) ||
+                !areValidZones(satellite.getZones()) ||
                         isNotValidReadingFrequency(satellite.getReadingFrequency())
         ) {
             return Optional.empty();
         }
 
-        if(satellite.getId() != null) {
+        if (satellite.getId() != null) {
             repository.findById(satellite.getId()).ifPresent(managed -> {
                 satellite.setVersion(managed.getVersion());
             });
         }
 
-        // Schedule the reading
+        SatelliteEntity managedEntity = repository.save(satellite);
 
-        return Optional.of(repository.save(satellite));
+        scheduler.schedule(managedEntity);
+
+        return Optional.of(managedEntity);
     }
 
     @Override
     public boolean decommission(UUID satelliteId) {
-        // should cancel any scheduled scanning
+        // should cancel any schedule scanning
         return false;
     }
 
@@ -89,22 +100,22 @@ public class SatelliteService implements ISatelliteService {
                 frequency.value() <= 0;
     }
 
-    private boolean isValidScannedZones(List<Zone> zones) {
+    private boolean areValidZones(List<Zone> zones) {
         return zones != null &&
                 !zones.isEmpty() &&
-                zones.stream().allMatch(this::isValidScannedZone);
+                zones.stream().allMatch(this::isValidZone);
     }
 
-    private boolean isValidScannedZone(Zone zone) {
+    private boolean isValidZone(Zone zone) {
         return zone != null &&
-                isValidCoordinates(zone.topLeftCoordinate()) &&
-                isValidCoordinates(zone.bottomRightCoordinate());
+                isValidCoordinate(zone.topLeftCoordinate()) &&
+                isValidCoordinate(zone.bottomRightCoordinate());
     }
 
-    private boolean isValidCoordinates(Coordinates coordinates) {
-        return coordinates != null &&
-                coordinates.latitude() != null &&
-                coordinates.longitude() != null;
+    private boolean isValidCoordinate(Coordinate coordinate) {
+        return coordinate != null &&
+                coordinate.latitude() != null &&
+                coordinate.longitude() != null;
     }
 
     private boolean setSatelliteActivationStatus(UUID satelliteId, boolean status) {

@@ -8,10 +8,10 @@ class ZoneTest {
     @Test
     void should_throwException_when_TlOrBrValueIsNull() {
         assertThrows(IllegalArgumentException.class, () -> {
-            new Zone(null, new Coordinates(1.0, 1.0));
+            new Zone(null, new Coordinate(1.0, 1.0));
         });
         assertThrows(IllegalArgumentException.class, () -> {
-            new Zone(new Coordinates(1.0, 1.0), null);
+            new Zone(new Coordinate(1.0, 1.0), null);
         });
         assertThrows(IllegalArgumentException.class, () -> {
             new Zone(null, null);
