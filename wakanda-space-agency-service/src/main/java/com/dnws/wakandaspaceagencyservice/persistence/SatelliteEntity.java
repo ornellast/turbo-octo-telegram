@@ -50,6 +50,9 @@ public final class SatelliteEntity extends BaseEntity {
     private List<ScannedZone> scannedZones;
 
     public List<ScannedZone> getScannedZones() {
-        return new ArrayList<>(scannedZones);
+        if(scannedZones != null) {
+            return new ArrayList<>(scannedZones);
+        }
+        return new ArrayList<>();
     }
 }
