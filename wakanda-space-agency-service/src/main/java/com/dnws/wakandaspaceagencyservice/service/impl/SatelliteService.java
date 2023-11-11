@@ -31,7 +31,7 @@ public class SatelliteService implements ISatelliteService {
     }
 
     @Override
-    public void executeReading(UUID satelliteId) {
+    public void readNow(UUID satelliteId) {
         throw new RuntimeException("Not implemented yet!");
     }
 
@@ -69,8 +69,21 @@ public class SatelliteService implements ISatelliteService {
 
     @Override
     public boolean decommission(UUID satelliteId) {
-        // should cancel any schedule scanning
-        return false;
+        Optional<SatelliteEntity> optional = repository.findById(satelliteId);
+
+        if (optional.isEmpty()) {
+            return false;
+        }
+
+        SatelliteEntity entity = optional.get();
+        if(!entity.isActive()){
+            return false;
+        }
+        scheduler.cancelAllScheduledReadings(satelliteId);
+
+        repository.delete(entity);
+        return true;
+
     }
 
 
@@ -82,11 +95,12 @@ public class SatelliteService implements ISatelliteService {
         Optional<SatelliteEntity> optional = repository.findById(satelliteId);
 
         if (optional.isEmpty()) {
-            decommission(satelliteId);
             return false;
         }
 
         var entity = optional.get();
+
+        scheduler.cancelAllScheduledReadings(entity.getId());
 
         entity.setReadingFrequency(frequency);
 

@@ -14,10 +14,11 @@ class FrequencyTest {
             ", 3",
             "MINUTES, ",
             ", ",
+            "SECONDS, -1",
     })
     void should_throwException_when_UnitOrValueIsNull(
             TimeUnit unit,
-            Integer value
+            Long value
     ){
         assertThrows(IllegalArgumentException.class, () ->{
             new Frequency(unit,value);

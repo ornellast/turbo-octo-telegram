@@ -8,7 +8,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface ISatelliteService {
-    void executeReading(UUID satelliteId);
+    void readNow(UUID satelliteId);
 
     boolean activate(UUID satelliteId);
 

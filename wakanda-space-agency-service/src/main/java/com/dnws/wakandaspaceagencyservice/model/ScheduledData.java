@@ -11,8 +11,8 @@ public record ScheduledData(
         UUID id
 ) {
     public ScheduledData {
-        Assert.notNull(satelliteId, "latitude cannot be null");
-        Assert.notNull(schedule, "longitude cannot be null");
+        Assert.notNull(satelliteId, "ScheduledFuture<?> schedule cannot be null");
+        Assert.notNull(schedule, "schedule cannot be null");
     }
 
     public ScheduledData(

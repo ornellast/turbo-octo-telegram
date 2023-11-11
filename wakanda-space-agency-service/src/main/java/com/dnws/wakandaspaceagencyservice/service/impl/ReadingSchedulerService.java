@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -32,7 +33,15 @@ public class ReadingSchedulerService implements IReadingSchedulerService {
 
 
     @Override
-    public UUID schedule(SatelliteEntity entity) {
+    public UUID schedule(SatelliteEntity externalEntity) {
+
+        Optional<SatelliteEntity> optional = repository.findById(externalEntity.getId());
+
+        if(optional.isEmpty()){
+            return null;
+        }
+        SatelliteEntity entity = optional.get();
+
         var frequency = entity.getReadingFrequency();
 
         ISatelliteReadTaskExecutor taskExecutor = getTaskExecutor(entity);

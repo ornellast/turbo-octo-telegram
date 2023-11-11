@@ -36,7 +36,7 @@ public class Test {
     @PostMapping
     public ResponseEntity<SatelliteEntity> saveDummy() {
         var entity = new SatelliteEntity();
-        entity.setReadingFrequency(new Frequency(TimeUnit.SECONDS, 5));
+        entity.setReadingFrequency(new Frequency(TimeUnit.SECONDS, 5L));
         entity.setActive(true);
         entity.setType(SatelliteType.WEATHER);
         entity.setZones(
