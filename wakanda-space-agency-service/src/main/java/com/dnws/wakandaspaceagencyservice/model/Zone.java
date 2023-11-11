@@ -4,13 +4,13 @@ import org.springframework.util.Assert;
 
 import java.util.UUID;
 
-public record ScannedZone(Coordinates topLeftCoordinate, Coordinates bottomRightCoordinate, UUID id) {
+public record Zone(Coordinates topLeftCoordinate, Coordinates bottomRightCoordinate, UUID id) {
 
-    public ScannedZone {
+    public Zone {
         Assert.notNull(topLeftCoordinate, "topLeftCoordinate cannot be null");
         Assert.notNull(bottomRightCoordinate, "bottomRightCoordinate cannot be null");
     }
-    public ScannedZone(Coordinates topLeftCoordinate, Coordinates bottomRightCoordinate){
+    public Zone(Coordinates topLeftCoordinate, Coordinates bottomRightCoordinate){
         this(topLeftCoordinate, bottomRightCoordinate, UUID.randomUUID());
     }
 }

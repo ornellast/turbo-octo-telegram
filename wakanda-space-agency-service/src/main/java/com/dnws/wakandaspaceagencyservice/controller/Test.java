@@ -2,8 +2,8 @@ package com.dnws.wakandaspaceagencyservice.controller;
 
 import com.dnws.wakandaspaceagencyservice.enums.SatelliteType;
 import com.dnws.wakandaspaceagencyservice.model.Coordinates;
-import com.dnws.wakandaspaceagencyservice.model.ReadingFrequency;
-import com.dnws.wakandaspaceagencyservice.model.ScannedZone;
+import com.dnws.wakandaspaceagencyservice.model.Frequency;
+import com.dnws.wakandaspaceagencyservice.model.Zone;
 import com.dnws.wakandaspaceagencyservice.persistence.SatelliteEntity;
 import com.dnws.wakandaspaceagencyservice.persistence.repositories.SatelliteRepository;
 import org.springframework.http.ResponseEntity;
@@ -34,12 +34,12 @@ public class Test {
     @PostMapping
     public ResponseEntity<SatelliteEntity> SaveDummy() {
         var entity = new SatelliteEntity();
-        entity.setReadingFrequency(new ReadingFrequency(TimeUnit.MINUTES, 5));
+        entity.setReadingFrequency(new Frequency(TimeUnit.MINUTES, 5));
         entity.setActive(true);
         entity.setType(SatelliteType.WEATHER);
-        entity.setScannedZones(
+        entity.setZones(
                 List.of(
-                        new ScannedZone(
+                        new Zone(
                                 new Coordinates(Math.random() * 10, Math.random() * 100),
                                 new Coordinates(Math.random() * 10, Math.random() * 100)
                         )

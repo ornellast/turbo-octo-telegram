@@ -1,8 +1,8 @@
 package com.dnws.wakandaspaceagencyservice.service.impl;
 
 import com.dnws.wakandaspaceagencyservice.model.Coordinates;
-import com.dnws.wakandaspaceagencyservice.model.ReadingFrequency;
-import com.dnws.wakandaspaceagencyservice.model.ScannedZone;
+import com.dnws.wakandaspaceagencyservice.model.Frequency;
+import com.dnws.wakandaspaceagencyservice.model.Zone;
 import com.dnws.wakandaspaceagencyservice.persistence.SatelliteEntity;
 import com.dnws.wakandaspaceagencyservice.persistence.repositories.SatelliteRepository;
 import com.dnws.wakandaspaceagencyservice.service.ISatelliteService;
@@ -39,7 +39,7 @@ public class SatelliteService implements ISatelliteService {
     @Override
     public Optional<SatelliteEntity> save(SatelliteEntity satellite) {
         if (
-                !isValidScannedZones(satellite.getScannedZones()) ||
+                !isValidScannedZones(satellite.getZones()) ||
                         isNotValidReadingFrequency(satellite.getReadingFrequency())
         ) {
             return Optional.empty();
@@ -64,7 +64,7 @@ public class SatelliteService implements ISatelliteService {
 
 
     @Override
-    public boolean updateReadingFrequency(UUID satelliteId, ReadingFrequency frequency) {
+    public boolean updateReadingFrequency(UUID satelliteId, Frequency frequency) {
         if (isNotValidReadingFrequency(frequency)) {
             return false;
         }
@@ -82,20 +82,20 @@ public class SatelliteService implements ISatelliteService {
         return save(entity).isPresent();
     }
 
-    private boolean isNotValidReadingFrequency(ReadingFrequency frequency) {
+    private boolean isNotValidReadingFrequency(Frequency frequency) {
         return frequency == null ||
                 frequency.unit() == null ||
                 frequency.value() == null ||
                 frequency.value() <= 0;
     }
 
-    private boolean isValidScannedZones(List<ScannedZone> zones) {
+    private boolean isValidScannedZones(List<Zone> zones) {
         return zones != null &&
                 !zones.isEmpty() &&
                 zones.stream().allMatch(this::isValidScannedZone);
     }
 
-    private boolean isValidScannedZone(ScannedZone zone) {
+    private boolean isValidScannedZone(Zone zone) {
         return zone != null &&
                 isValidCoordinates(zone.topLeftCoordinate()) &&
                 isValidCoordinates(zone.bottomRightCoordinate());

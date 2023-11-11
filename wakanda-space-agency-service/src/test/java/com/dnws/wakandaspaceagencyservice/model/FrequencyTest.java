@@ -7,7 +7,7 @@ import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class ReadingFrequencyTest {
+class FrequencyTest {
 
     @ParameterizedTest
     @CsvSource(value = {
@@ -20,7 +20,7 @@ class ReadingFrequencyTest {
             Integer value
     ){
         assertThrows(IllegalArgumentException.class, () ->{
-            new ReadingFrequency(unit,value);
+            new Frequency(unit,value);
         });
     }
 }

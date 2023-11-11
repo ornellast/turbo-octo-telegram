@@ -4,9 +4,9 @@ import org.springframework.util.Assert;
 
 import java.util.concurrent.TimeUnit;
 
-public record ReadingFrequency(TimeUnit unit, Integer value) {
+public record Frequency(TimeUnit unit, Integer value) {
 
-    public ReadingFrequency {
+    public Frequency {
         Assert.notNull(unit, "unit cannot be null");
         Assert.notNull(value, "value cannot be null");
     }

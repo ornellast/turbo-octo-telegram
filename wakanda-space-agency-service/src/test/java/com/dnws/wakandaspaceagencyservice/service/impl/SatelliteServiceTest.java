@@ -2,15 +2,13 @@ package com.dnws.wakandaspaceagencyservice.service.impl;
 
 import com.dnws.wakandaspaceagencyservice.enums.SatelliteType;
 import com.dnws.wakandaspaceagencyservice.model.Coordinates;
-import com.dnws.wakandaspaceagencyservice.model.ReadingFrequency;
-import com.dnws.wakandaspaceagencyservice.model.ScannedZone;
+import com.dnws.wakandaspaceagencyservice.model.Frequency;
+import com.dnws.wakandaspaceagencyservice.model.Zone;
 import com.dnws.wakandaspaceagencyservice.persistence.SatelliteEntity;
 import com.dnws.wakandaspaceagencyservice.persistence.repositories.SatelliteRepository;
 import com.dnws.wakandaspaceagencyservice.service.ISatelliteService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -28,7 +26,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
@@ -154,12 +151,12 @@ class SatelliteServiceTest {
     private SatelliteEntity createEntity(UUID id) {
         var entity = new SatelliteEntity();
         entity.setId(id);
-        entity.setReadingFrequency(new ReadingFrequency(TimeUnit.MINUTES, 5));
+        entity.setReadingFrequency(new Frequency(TimeUnit.MINUTES, 5));
         entity.setActive(true);
         entity.setType(SatelliteType.WEATHER);
-        entity.setScannedZones(
+        entity.setZones(
                 List.of(
-                        new ScannedZone(
+                        new Zone(
                                 new Coordinates(Math.random() * 10, Math.random() * 100),
                                 new Coordinates(Math.random() * 10, Math.random() * 100)
                         )

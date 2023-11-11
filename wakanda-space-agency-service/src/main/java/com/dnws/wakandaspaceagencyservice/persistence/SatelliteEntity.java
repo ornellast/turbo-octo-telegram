@@ -2,8 +2,8 @@ package com.dnws.wakandaspaceagencyservice.persistence;
 
 
 import com.dnws.wakandaspaceagencyservice.enums.SatelliteType;
-import com.dnws.wakandaspaceagencyservice.model.ReadingFrequency;
-import com.dnws.wakandaspaceagencyservice.model.ScannedZone;
+import com.dnws.wakandaspaceagencyservice.model.Frequency;
+import com.dnws.wakandaspaceagencyservice.model.Zone;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Enumerated;
@@ -35,7 +35,7 @@ public final class SatelliteEntity extends BaseEntity {
 
     @Column(nullable = false, columnDefinition = "jsonb")
     @JdbcTypeCode(SqlTypes.JSON)
-    private ReadingFrequency readingFrequency;
+    private Frequency readingFrequency;
 
     @Column(nullable = false)
     private boolean isActive = true;
@@ -47,11 +47,11 @@ public final class SatelliteEntity extends BaseEntity {
 
     @Column(nullable = false, columnDefinition = "jsonb")
     @JdbcTypeCode(SqlTypes.JSON)
-    private List<ScannedZone> scannedZones;
+    private List<Zone> zones;
 
-    public List<ScannedZone> getScannedZones() {
-        if(scannedZones != null) {
-            return new ArrayList<>(scannedZones);
+    public List<Zone> getZones() {
+        if(zones != null) {
+            return new ArrayList<>(zones);
         }
         return new ArrayList<>();
     }
