@@ -40,7 +40,7 @@ public class SatelliteService implements ISatelliteService {
     public Optional<SatelliteEntity> save(SatelliteEntity satellite) {
         if (
                 !isValidScannedZones(satellite.getScannedZones()) ||
-                        !isValidReadingFrequency(satellite.getReadingFrequency())
+                        isNotValidReadingFrequency(satellite.getReadingFrequency())
         ) {
             return Optional.empty();
         }
@@ -65,7 +65,7 @@ public class SatelliteService implements ISatelliteService {
 
     @Override
     public boolean updateReadingFrequency(UUID satelliteId, ReadingFrequency frequency) {
-        if (!isValidReadingFrequency(frequency)) {
+        if (isNotValidReadingFrequency(frequency)) {
             return false;
         }
         Optional<SatelliteEntity> optional = repository.findById(satelliteId);
@@ -82,15 +82,17 @@ public class SatelliteService implements ISatelliteService {
         return save(entity).isPresent();
     }
 
-    private boolean isValidReadingFrequency(ReadingFrequency frequency) {
-        return frequency != null &&
-                frequency.unit() != null &&
-                frequency.value() != null &&
-                frequency.value() > 0;
+    private boolean isNotValidReadingFrequency(ReadingFrequency frequency) {
+        return frequency == null ||
+                frequency.unit() == null ||
+                frequency.value() == null ||
+                frequency.value() <= 0;
     }
 
     private boolean isValidScannedZones(List<ScannedZone> zones) {
-        return !zones.isEmpty() && zones.stream().allMatch(this::isValidScannedZone);
+        return zones != null &&
+                !zones.isEmpty() &&
+                zones.stream().allMatch(this::isValidScannedZone);
     }
 
     private boolean isValidScannedZone(ScannedZone zone) {
