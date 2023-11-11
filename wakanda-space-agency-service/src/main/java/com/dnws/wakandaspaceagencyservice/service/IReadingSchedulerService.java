@@ -11,4 +11,6 @@ public interface IReadingSchedulerService {
 
     void cancelReading(UUID scheduleId);
 
+    void cancelAllScheduledReadings(UUID satelliteId);
+
 }

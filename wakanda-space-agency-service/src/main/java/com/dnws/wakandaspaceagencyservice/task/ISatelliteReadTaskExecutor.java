@@ -3,8 +3,10 @@ package com.dnws.wakandaspaceagencyservice.task;
 import com.dnws.wakandaspaceagencyservice.persistence.SatelliteEntity;
 import com.dnws.wakandaspaceagencyservice.persistence.repositories.SatelliteRepository;
 
+import java.util.UUID;
+
 public interface ISatelliteReadTaskExecutor extends Runnable {
-    SatelliteEntity getSatelliteEntity();
+    UUID getSatelliteId();
 
     SatelliteRepository getSatelliteRepository();
 

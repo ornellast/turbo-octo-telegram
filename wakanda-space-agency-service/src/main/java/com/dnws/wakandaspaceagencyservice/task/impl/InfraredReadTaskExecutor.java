@@ -4,24 +4,28 @@ import com.dnws.wakandaspaceagencyservice.persistence.SatelliteEntity;
 import com.dnws.wakandaspaceagencyservice.persistence.repositories.SatelliteRepository;
 import com.dnws.wakandaspaceagencyservice.reader.impl.InfraredReader;
 import com.dnws.wakandaspaceagencyservice.task.ISatelliteReadTaskExecutor;
+import jakarta.persistence.EntityNotFoundException;
 
 import java.time.Instant;
+import java.util.Optional;
+import java.util.UUID;
 
 public class InfraredReadTaskExecutor implements ISatelliteReadTaskExecutor {
 
-    private SatelliteEntity entity;
+    private UUID satelliteId;
     private SatelliteRepository repository;
 
 
-    public InfraredReadTaskExecutor(SatelliteEntity entity, SatelliteRepository repository) {
-        this.entity = entity;
-        this.repository = repository;
+    public InfraredReadTaskExecutor(UUID satelliteId, SatelliteRepository service) {
+        this.satelliteId = satelliteId;
+        this.repository = service;
     }
 
     @Override
-    public SatelliteEntity getSatelliteEntity() {
-        return this.entity;
+    public UUID getSatelliteId() {
+        return satelliteId;
     }
+
     @Override
     public SatelliteRepository getSatelliteRepository() {
         return this.repository;
@@ -29,13 +33,22 @@ public class InfraredReadTaskExecutor implements ISatelliteReadTaskExecutor {
 
     @Override
     public void run() {
-        var reader = new InfraredReader(entity.getZones());
-        var data = reader.read();
+
+        Optional<SatelliteEntity> optional = repository.findById(satelliteId);
+
+        optional.ifPresent(entity -> {
+            var reader = new InfraredReader(entity.getZones());
+            var data = reader.read();
+            publish(data);
+            entity.setLastReading(Instant.now());
+            repository.save(entity);
+        });
+
+        if (optional.isEmpty()) {
+            throw new EntityNotFoundException("[InfraredData] No satellite found with ID: " + satelliteId);
+        }
 
 
-        publish(data);
-        entity.setLastReading(Instant.now());
-        repository.save(entity);
     }
 
     private void publish(String weatherDataTopic) {

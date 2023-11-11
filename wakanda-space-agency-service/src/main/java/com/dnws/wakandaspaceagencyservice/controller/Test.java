@@ -44,6 +44,10 @@ public class Test {
                         new Zone(
                                 new Coordinate(Math.random() * 10, Math.random() * 100),
                                 new Coordinate(Math.random() * 10, Math.random() * 100)
+                        ),
+                        new Zone(
+                                new Coordinate(Math.random() * 10, Math.random() * 100),
+                                new Coordinate(Math.random() * 10, Math.random() * 100)
                         )
                 )
         );

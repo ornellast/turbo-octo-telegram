@@ -17,15 +17,14 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
 @Service
 public class ReadingSchedulerService implements IReadingSchedulerService {
 
     private final SatelliteRepository repository;
-    private ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
-    private Map<UUID, ScheduledData> scheduledReadings = new ConcurrentHashMap<>();
-    private Map<UUID, Set<UUID>> scheduledSatellites = new ConcurrentHashMap<>();
+    private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+    private final Map<UUID, ScheduledData> scheduledReadings = new ConcurrentHashMap<>();
+    private final Map<UUID, Set<UUID>> scheduledSatellites = new ConcurrentHashMap<>();
 
     public ReadingSchedulerService(SatelliteRepository repository) {
         this.repository = repository;
@@ -39,10 +38,6 @@ public class ReadingSchedulerService implements IReadingSchedulerService {
         ISatelliteReadTaskExecutor taskExecutor = getTaskExecutor(entity);
 
         ScheduledFuture<?> schedule = executorService.scheduleAtFixedRate(taskExecutor, 2, frequency.value(), frequency.unit());
-
-
-//        ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
-//        ScheduledFuture<?> schedule = executorService.schedule(taskExecutor, 5, TimeUnit.SECONDS);
 
         UUID satelliteId = entity.getId();
         ScheduledData scheduleData = new ScheduledData(satelliteId, schedule);
@@ -61,8 +56,8 @@ public class ReadingSchedulerService implements IReadingSchedulerService {
 
     private ISatelliteReadTaskExecutor getTaskExecutor(SatelliteEntity entity) {
         return switch (entity.getType()) {
-            case INFRARED -> new InfraredReadTaskExecutor(entity, repository);
-            default -> new WeatherReadTaskExecutor(entity, repository);
+            case INFRARED -> new InfraredReadTaskExecutor(entity.getId(), repository);
+            default -> new WeatherReadTaskExecutor(entity.getId(), repository);
         };
     }
 
@@ -73,6 +68,21 @@ public class ReadingSchedulerService implements IReadingSchedulerService {
             scheduledData.schedule().cancel(false);
             var scheduleSet = scheduledSatellites.get(scheduledData.satelliteId());
             scheduleSet.remove(scheduleId);
+        }
+    }
+
+    @Override
+    public void cancelAllScheduledReadings(UUID satelliteId) {
+        Set<UUID> scheduledSatellites = this.scheduledSatellites
+                .get(satelliteId);
+
+        if (scheduledSatellites != null && !scheduledSatellites.isEmpty()) {
+            scheduledSatellites
+                    .forEach(scheduleId -> {
+                        scheduledReadings.get(scheduleId).schedule().cancel(true);
+                        scheduledReadings.remove(scheduleId);
+                    });
+            scheduledSatellites.remove(satelliteId);
         }
     }
 }
