@@ -1,21 +1,17 @@
 package com.dnws.wakandaspaceagencyservice.task.impl;
 
 import com.dnws.wakandaspaceagencyservice.TestUtils;
-import com.dnws.wakandaspaceagencyservice.enums.SatelliteType;
-import com.dnws.wakandaspaceagencyservice.model.Coordinate;
-import com.dnws.wakandaspaceagencyservice.model.Frequency;
+import com.dnws.wakandaspaceagencyservice.kafka.model.WeatherDataTopic;
+import com.dnws.wakandaspaceagencyservice.kafka.publisher.IPublisher;
 import com.dnws.wakandaspaceagencyservice.model.Zone;
-import com.dnws.wakandaspaceagencyservice.persistence.SatelliteEntity;
 import com.dnws.wakandaspaceagencyservice.persistence.repositories.SatelliteRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.eq;
@@ -28,15 +24,19 @@ import static org.mockito.Mockito.when;
 class WeatherReadTaskExecutorTest {
 
     private final SatelliteRepository repository = mock();
+    private final IPublisher<WeatherDataTopic, UUID> publisher = mock();
 
     @Test
     void constructor_shouldNotAcceptNullValues() {
         // Given
         assertThrows(IllegalArgumentException.class
-                , () -> new WeatherReadTaskExecutor(UUID.randomUUID(), null)
+                , () -> new WeatherReadTaskExecutor(null, repository, publisher)
         );
         assertThrows(IllegalArgumentException.class
-                , () -> new WeatherReadTaskExecutor(null, mock())
+                , () -> new WeatherReadTaskExecutor(mock(), null, publisher)
+        );
+        assertThrows(IllegalArgumentException.class
+                , () -> new WeatherReadTaskExecutor(mock(), repository, null)
         );
     }
 
@@ -44,7 +44,7 @@ class WeatherReadTaskExecutorTest {
     void run_shouldThrowEntityNotFoundException_when_satelliteIsNotFound() {
         // Given
         var id = UUID.randomUUID();
-        var executor = new WeatherReadTaskExecutor(id, repository);
+        var executor = new WeatherReadTaskExecutor(id, repository, publisher);
 
         when(repository.findById(eq(id))).thenReturn(Optional.empty());
 
@@ -59,7 +59,7 @@ class WeatherReadTaskExecutorTest {
         var id = UUID.randomUUID();
         var entity = TestUtils.createEntity(id);
         var zoneIds = entity.getZones().stream().map(Zone::id).toList();
-        var executor = spy(new WeatherReadTaskExecutor(id, repository));
+        var executor = spy(new WeatherReadTaskExecutor(id, repository, publisher));
 
         when(repository.findById(eq(id))).thenReturn(Optional.of(entity));
 

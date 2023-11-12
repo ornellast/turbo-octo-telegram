@@ -1,5 +1,6 @@
 package com.dnws.wakandaspaceagencyservice.task.impl;
 
+import com.dnws.wakandaspaceagencyservice.kafka.publisher.IPublisher;
 import com.dnws.wakandaspaceagencyservice.persistence.SatelliteEntity;
 import com.dnws.wakandaspaceagencyservice.persistence.repositories.SatelliteRepository;
 import com.dnws.wakandaspaceagencyservice.reader.impl.InfraredReader;
@@ -11,17 +12,20 @@ import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
-public class InfraredReadTaskExecutor implements ISatelliteReadTaskExecutor {
+public class InfraredReadTaskExecutor implements ISatelliteReadTaskExecutor<String, String> {
 
     private UUID satelliteId;
     private SatelliteRepository repository;
+    private IPublisher<String, String> publisher;
 
 
-    public InfraredReadTaskExecutor(UUID satelliteId, SatelliteRepository repository) {
+    public InfraredReadTaskExecutor(UUID satelliteId, SatelliteRepository repository, IPublisher<String, String> publisher) {
         Assert.notNull(satelliteId, "satelliteId cannot be null");
         Assert.notNull(repository, "repository cannot be null");
+        Assert.notNull(publisher, "publisher cannot be null");
         this.satelliteId = satelliteId;
         this.repository = repository;
+        this.publisher = publisher;
     }
 
     @Override
@@ -32,6 +36,11 @@ public class InfraredReadTaskExecutor implements ISatelliteReadTaskExecutor {
     @Override
     public SatelliteRepository getSatelliteRepository() {
         return this.repository;
+    }
+
+    @Override
+    public IPublisher<String, String> getPublisher() {
+        return this.publisher;
     }
 
     @Override
@@ -54,7 +63,7 @@ public class InfraredReadTaskExecutor implements ISatelliteReadTaskExecutor {
 
     }
 
-    private void publish(String weatherDataTopic) {
-        System.out.println("[InfraredData] Publishing data: " + weatherDataTopic);
+    private void publish(String data) {
+        System.out.println("[InfraredData] Publishing data: " + data);
     }
 }

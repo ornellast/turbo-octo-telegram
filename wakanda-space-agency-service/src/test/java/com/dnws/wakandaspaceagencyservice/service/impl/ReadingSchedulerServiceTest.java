@@ -2,10 +2,10 @@ package com.dnws.wakandaspaceagencyservice.service.impl;
 
 import com.dnws.wakandaspaceagencyservice.TestUtils;
 import com.dnws.wakandaspaceagencyservice.enums.SatelliteType;
-import com.dnws.wakandaspaceagencyservice.model.Coordinate;
+import com.dnws.wakandaspaceagencyservice.kafka.model.WeatherDataTopic;
+import com.dnws.wakandaspaceagencyservice.kafka.publisher.IPublisher;
 import com.dnws.wakandaspaceagencyservice.model.Frequency;
 import com.dnws.wakandaspaceagencyservice.model.ScheduledData;
-import com.dnws.wakandaspaceagencyservice.model.Zone;
 import com.dnws.wakandaspaceagencyservice.persistence.SatelliteEntity;
 import com.dnws.wakandaspaceagencyservice.persistence.repositories.SatelliteRepository;
 import com.dnws.wakandaspaceagencyservice.service.IReadingSchedulerService;
@@ -17,7 +17,6 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -32,7 +31,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -43,9 +41,13 @@ import static org.mockito.Mockito.when;
 class ReadingSchedulerServiceTest {
 
     private final SatelliteRepository repository = mock();
-
-    private final IReadingSchedulerService service = new ReadingSchedulerService(repository);
+    private final IPublisher<WeatherDataTopic, UUID> weatherTopicPublisher = mock();
+    private final IPublisher<String, String> infraredTopicPublisher = mock();
     private final ScheduledExecutorService executorService = mock();
+
+
+    private final IReadingSchedulerService service =
+            new ReadingSchedulerService(repository, weatherTopicPublisher, infraredTopicPublisher);
     private Map<UUID, ScheduledData> scheduledReadings;
     private Map<UUID, Set<UUID>> scheduledSatellites;
 
@@ -154,9 +156,9 @@ class ReadingSchedulerServiceTest {
     }
 
     @Test
-    void cancelAllScheduledReadings_shouldDoNothing_when_thereIsNoSatelliteReadingScheduled(){
+    void cancelAllScheduledReadings_shouldDoNothing_when_thereIsNoSatelliteReadingScheduled() {
         // Given
-        UUID satelliteId =UUID.randomUUID();
+        UUID satelliteId = UUID.randomUUID();
 
         //When
         service.cancelAllScheduledReadings(satelliteId);
@@ -167,18 +169,18 @@ class ReadingSchedulerServiceTest {
     }
 
     @Test
-    void cancelAllScheduledReadings_shouldCancelAllReadings_when_SatelliteReadingScheduledIsFound(){
+    void cancelAllScheduledReadings_shouldCancelAllReadings_when_SatelliteReadingScheduledIsFound() {
         // Given
-        UUID satelliteId =UUID.randomUUID();
+        UUID satelliteId = UUID.randomUUID();
         UUID scheduledReadingId1 = UUID.randomUUID();
         UUID scheduledReadingId2 = UUID.randomUUID();
         UUID scheduledReadingId3 = UUID.randomUUID();
-        ScheduledFuture<?> schedule1 =  mock();
-        ScheduledFuture<?> schedule2 =  mock();
-        ScheduledFuture<?> schedule3 =  mock();
-        ScheduledData scheduledData1 = new ScheduledData(satelliteId,schedule1);
-        ScheduledData scheduledData2 = new ScheduledData(satelliteId,schedule2);
-        ScheduledData scheduledData3 = new ScheduledData(satelliteId,schedule3);
+        ScheduledFuture<?> schedule1 = mock();
+        ScheduledFuture<?> schedule2 = mock();
+        ScheduledFuture<?> schedule3 = mock();
+        ScheduledData scheduledData1 = new ScheduledData(satelliteId, schedule1);
+        ScheduledData scheduledData2 = new ScheduledData(satelliteId, schedule2);
+        ScheduledData scheduledData3 = new ScheduledData(satelliteId, schedule3);
 
         Set<UUID> setScheduledReadings = new HashSet<>(Set.of(scheduledReadingId1, scheduledReadingId2, scheduledReadingId3));
 

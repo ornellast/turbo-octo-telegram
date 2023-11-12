@@ -1,5 +1,7 @@
 package com.dnws.wakandaspaceagencyservice.service.impl;
 
+import com.dnws.wakandaspaceagencyservice.kafka.model.WeatherDataTopic;
+import com.dnws.wakandaspaceagencyservice.kafka.publisher.IPublisher;
 import com.dnws.wakandaspaceagencyservice.model.ScheduledData;
 import com.dnws.wakandaspaceagencyservice.persistence.SatelliteEntity;
 import com.dnws.wakandaspaceagencyservice.persistence.repositories.SatelliteRepository;
@@ -27,8 +29,13 @@ public class ReadingSchedulerService implements IReadingSchedulerService {
     private final Map<UUID, ScheduledData> scheduledReadings = new ConcurrentHashMap<>();
     private final Map<UUID, Set<UUID>> scheduledSatellites = new ConcurrentHashMap<>();
 
-    public ReadingSchedulerService(SatelliteRepository repository) {
+    private final IPublisher<WeatherDataTopic, UUID> weatherTopicPublisher;
+    private final IPublisher<String, String> infraredTopicPublisher;
+
+    public ReadingSchedulerService(SatelliteRepository repository, IPublisher<WeatherDataTopic, UUID> weatherTopicPublisher, IPublisher<String, String> infraredTopicPublisher) {
         this.repository = repository;
+        this.weatherTopicPublisher = weatherTopicPublisher;
+        this.infraredTopicPublisher = infraredTopicPublisher;
     }
 
 
@@ -37,7 +44,7 @@ public class ReadingSchedulerService implements IReadingSchedulerService {
 
         Optional<SatelliteEntity> optional = repository.findById(externalEntity.getId());
 
-        if(optional.isEmpty()){
+        if (optional.isEmpty()) {
             return null;
         }
         SatelliteEntity entity = optional.get();
@@ -66,8 +73,8 @@ public class ReadingSchedulerService implements IReadingSchedulerService {
     @Override
     public ISatelliteReadTaskExecutor getTaskExecutor(SatelliteEntity entity) {
         return switch (entity.getType()) {
-            case INFRARED -> new InfraredReadTaskExecutor(entity.getId(), repository);
-            default -> new WeatherReadTaskExecutor(entity.getId(), repository);
+            case INFRARED -> new InfraredReadTaskExecutor(entity.getId(), repository, infraredTopicPublisher);
+            default -> new WeatherReadTaskExecutor(entity.getId(), repository, weatherTopicPublisher);
         };
     }
 
