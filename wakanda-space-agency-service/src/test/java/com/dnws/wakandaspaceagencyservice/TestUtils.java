@@ -16,6 +16,7 @@ public class TestUtils {
 
     public static SatelliteEntity createEntity(UUID id) {
         var entity = new SatelliteEntity();
+        entity.setName(UUID.randomUUID().toString());
         entity.setId(id);
         entity.setReadingFrequency(new Frequency(TimeUnit.MINUTES, 5L));
         entity.setActive(true);
