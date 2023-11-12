@@ -8,6 +8,7 @@ import com.dnws.wakandaspaceagencyservice.persistence.SatelliteEntity;
 import com.dnws.wakandaspaceagencyservice.persistence.repositories.SatelliteRepository;
 import com.dnws.wakandaspaceagencyservice.service.IReadingSchedulerService;
 import com.dnws.wakandaspaceagencyservice.service.ISatelliteService;
+import com.dnws.wakandaspaceagencyservice.task.ISatelliteReadTaskExecutor;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -281,7 +282,7 @@ class SatelliteServiceTest {
     void updateReadingFrequency_shouldReturnTrueAndDoSchedule_when_SatelliteIsFoundAndFrequencyIsValid() {
         // given
         var id = UUID.randomUUID();
-        var entity = spy(createEntity(id));
+        var entity = createEntity(id);
         Frequency frequency = new Frequency(TimeUnit.SECONDS, 3L);
 
         when(satelliteRepository.findById(eq(id))).thenReturn(Optional.of(entity));
@@ -295,6 +296,40 @@ class SatelliteServiceTest {
         verify(satelliteRepository, times(2)).findById(eq(id));
         verify(satelliteRepository).save(eq(entity));
         verify(scheduler).schedule(eq(entity));
+    }
+
+    @Test
+    void readNow_shouldNotInteractWithScheduler_when_satelliteIsNotFound() {
+        // given
+        var id = UUID.randomUUID();
+
+        when(satelliteRepository.findById(eq(id))).thenReturn(Optional.empty());
+
+        // When
+        satelliteService.readNow(id);
+
+        // Then
+        verify(satelliteRepository).findById(eq(id));
+        verifyNoInteractions(scheduler);
+    }
+
+    @Test
+    void readNow_shouldInteractWithSchedulerAndRunTheExecutor_when_satelliteIsFound() {
+        // given
+        var id = UUID.randomUUID();
+        var entity = createEntity(id);
+        ISatelliteReadTaskExecutor executor = mock();
+
+        when(satelliteRepository.findById(eq(id))).thenReturn(Optional.of(entity));
+        when(scheduler.getTaskExecutor(eq(entity))).thenReturn(executor);
+
+        // When
+        satelliteService.readNow(id);
+
+        // Then
+        verify(satelliteRepository).findById(eq(id));
+        verify(scheduler).getTaskExecutor(eq(entity));
+        verify(executor).run();
     }
 
     private SatelliteEntity createEntity(UUID id) {

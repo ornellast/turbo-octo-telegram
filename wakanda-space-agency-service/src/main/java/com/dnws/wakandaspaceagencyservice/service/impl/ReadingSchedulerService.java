@@ -63,7 +63,8 @@ public class ReadingSchedulerService implements IReadingSchedulerService {
         return scheduleId;
     }
 
-    private ISatelliteReadTaskExecutor getTaskExecutor(SatelliteEntity entity) {
+    @Override
+    public ISatelliteReadTaskExecutor getTaskExecutor(SatelliteEntity entity) {
         return switch (entity.getType()) {
             case INFRARED -> new InfraredReadTaskExecutor(entity.getId(), repository);
             default -> new WeatherReadTaskExecutor(entity.getId(), repository);

@@ -32,7 +32,9 @@ public class SatelliteService implements ISatelliteService {
 
     @Override
     public void readNow(UUID satelliteId) {
-        throw new RuntimeException("Not implemented yet!");
+        repository.findById(satelliteId).ifPresent(entity -> {
+            scheduler.getTaskExecutor(entity).run();
+        });
     }
 
     @Override
