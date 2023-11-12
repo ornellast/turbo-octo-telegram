@@ -8,6 +8,7 @@ import com.dnws.wakandaspaceagencyservice.reader.ISatelliteDataReader;
 import com.dnws.wakandaspaceagencyservice.reader.impl.WeatherReader;
 import com.dnws.wakandaspaceagencyservice.task.ISatelliteReadTaskExecutor;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.util.Assert;
 
 import java.time.Instant;
 import java.util.List;
@@ -19,9 +20,11 @@ public class WeatherReadTaskExecutor implements ISatelliteReadTaskExecutor {
     private UUID satelliteId;
     private SatelliteRepository repository;
 
-    public WeatherReadTaskExecutor(UUID satelliteId, SatelliteRepository service) {
+    public WeatherReadTaskExecutor(UUID satelliteId, SatelliteRepository repository) {
+        Assert.notNull(satelliteId, "satelliteId cannot be null");
+        Assert.notNull(repository, "repository cannot be null");
         this.satelliteId = satelliteId;
-        this.repository = service;
+        this.repository = repository;
     }
 
     @Override

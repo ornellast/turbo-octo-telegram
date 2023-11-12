@@ -1,9 +1,7 @@
 package com.dnws.wakandaspaceagencyservice.service.impl;
 
-import com.dnws.wakandaspaceagencyservice.enums.SatelliteType;
-import com.dnws.wakandaspaceagencyservice.model.Coordinate;
+import com.dnws.wakandaspaceagencyservice.TestUtils;
 import com.dnws.wakandaspaceagencyservice.model.Frequency;
-import com.dnws.wakandaspaceagencyservice.model.Zone;
 import com.dnws.wakandaspaceagencyservice.persistence.SatelliteEntity;
 import com.dnws.wakandaspaceagencyservice.persistence.repositories.SatelliteRepository;
 import com.dnws.wakandaspaceagencyservice.service.IReadingSchedulerService;
@@ -15,7 +13,6 @@ import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -27,7 +24,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -64,7 +60,7 @@ class SatelliteServiceTest {
     void activate_shouldSetActiveTrueAndReturnTrue_when_satelliteIsFound() {
         // given
         var id = UUID.randomUUID();
-        var entity = spy(createEntity(id));
+        var entity = spy(TestUtils.createEntity(id));
         entity.setId(id);
         when(satelliteRepository.findById(eq(id))).thenReturn(Optional.of(entity));
 
@@ -100,7 +96,7 @@ class SatelliteServiceTest {
     void deactivate_shouldSetActiveFalseAndReturnTrue_when_satelliteIsFound() {
         // given
         var id = UUID.randomUUID();
-        var entity = spy(createEntity(id));
+        var entity = spy(TestUtils.createEntity(id));
 
         when(satelliteRepository.findById(eq(id))).thenReturn(Optional.of(entity));
 
@@ -119,7 +115,7 @@ class SatelliteServiceTest {
     void save_shouldReturnEmpty_when_FrequencyIsNull() {
         // given
         var id = UUID.randomUUID();
-        var entity = createEntity(id);
+        var entity = TestUtils.createEntity(id);
         entity.setReadingFrequency(null);
 
         // when
@@ -134,7 +130,7 @@ class SatelliteServiceTest {
     void save_shouldReturnEmpty_when_ZonesIsNull() {
         // given
         var id = UUID.randomUUID();
-        var entity = createEntity(id);
+        var entity = TestUtils.createEntity(id);
         entity.setZones(null);
 
         // when
@@ -149,7 +145,7 @@ class SatelliteServiceTest {
     void save_shouldReturnEmpty_when_ZonesIsEmpty() {
         // given
         var id = UUID.randomUUID();
-        var entity = createEntity(id);
+        var entity = TestUtils.createEntity(id);
         entity.setZones(new ArrayList<>());
 
         // when
@@ -163,7 +159,7 @@ class SatelliteServiceTest {
     @Test
     void save_shouldReturnPersistedNewSatellite_when_validationPasses() {
         // given
-        var entity = createEntity(null);
+        var entity = TestUtils.createEntity(null);
 
         when(satelliteRepository.save(eq(entity))).thenReturn(entity);
 
@@ -181,7 +177,7 @@ class SatelliteServiceTest {
     void save_shouldReturnUpdateSatellite_when_validationPasses() {
         // given
         var id = UUID.randomUUID();
-        var entity = createEntity(id);
+        var entity = TestUtils.createEntity(id);
 
         when(satelliteRepository.findById(eq(id))).thenReturn(Optional.of(entity));
         when(satelliteRepository.save(eq(entity))).thenReturn(entity);
@@ -216,7 +212,7 @@ class SatelliteServiceTest {
     void decommission_shouldReturnFalse_when_satelliteIsNotActive() {
         // given
         var id = UUID.randomUUID();
-        var entity = createEntity(id);
+        var entity = TestUtils.createEntity(id);
         entity.setActive(false);
 
         when(satelliteRepository.findById(eq(id))).thenReturn(Optional.of(entity));
@@ -235,7 +231,7 @@ class SatelliteServiceTest {
     void decommission_shouldReturnTrue_when_satelliteIsActive() {
         // given
         var id = UUID.randomUUID();
-        var entity = createEntity(id);
+        var entity = TestUtils.createEntity(id);
 
         when(satelliteRepository.findById(eq(id))).thenReturn(Optional.of(entity));
 
@@ -282,7 +278,7 @@ class SatelliteServiceTest {
     void updateReadingFrequency_shouldReturnTrueAndDoSchedule_when_SatelliteIsFoundAndFrequencyIsValid() {
         // given
         var id = UUID.randomUUID();
-        var entity = createEntity(id);
+        var entity = TestUtils.createEntity(id);
         Frequency frequency = new Frequency(TimeUnit.SECONDS, 3L);
 
         when(satelliteRepository.findById(eq(id))).thenReturn(Optional.of(entity));
@@ -317,7 +313,7 @@ class SatelliteServiceTest {
     void readNow_shouldInteractWithSchedulerAndRunTheExecutor_when_satelliteIsFound() {
         // given
         var id = UUID.randomUUID();
-        var entity = createEntity(id);
+        var entity = TestUtils.createEntity(id);
         ISatelliteReadTaskExecutor executor = mock();
 
         when(satelliteRepository.findById(eq(id))).thenReturn(Optional.of(entity));
@@ -330,23 +326,5 @@ class SatelliteServiceTest {
         verify(satelliteRepository).findById(eq(id));
         verify(scheduler).getTaskExecutor(eq(entity));
         verify(executor).run();
-    }
-
-    private SatelliteEntity createEntity(UUID id) {
-        var entity = new SatelliteEntity();
-        entity.setId(id);
-        entity.setReadingFrequency(new Frequency(TimeUnit.MINUTES, 5L));
-        entity.setActive(true);
-        entity.setType(SatelliteType.WEATHER);
-        entity.setZones(
-                List.of(
-                        new Zone(
-                                new Coordinate(Math.random() * 10, Math.random() * 100),
-                                new Coordinate(Math.random() * 10, Math.random() * 100)
-                        )
-                )
-        );
-
-        return entity;
     }
 }

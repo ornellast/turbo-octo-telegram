@@ -1,5 +1,6 @@
 package com.dnws.wakandaspaceagencyservice.service.impl;
 
+import com.dnws.wakandaspaceagencyservice.TestUtils;
 import com.dnws.wakandaspaceagencyservice.enums.SatelliteType;
 import com.dnws.wakandaspaceagencyservice.model.Coordinate;
 import com.dnws.wakandaspaceagencyservice.model.Frequency;
@@ -106,7 +107,7 @@ class ReadingSchedulerServiceTest {
     void schedule_shouldReturnNull_when_SatelliteIsNotFound() {
         // given
         var id = UUID.randomUUID();
-        var entity = createEntity(id);
+        var entity = TestUtils.createEntity(id);
         when(repository.findById(eq(id))).thenReturn(Optional.empty());
 
         // When
@@ -128,7 +129,7 @@ class ReadingSchedulerServiceTest {
     ) {
         // Given
         UUID id = UUID.randomUUID();
-        SatelliteEntity entity = createEntity(id);
+        SatelliteEntity entity = TestUtils.createEntity(id);
         Frequency frequency = new Frequency(unit, value);
         entity.setReadingFrequency(frequency);
         entity.setType(type);
@@ -201,24 +202,5 @@ class ReadingSchedulerServiceTest {
         verify(scheduledReadings).remove(eq(scheduledReadingId1));
         verify(scheduledReadings).remove(eq(scheduledReadingId2));
         verify(scheduledReadings).remove(eq(scheduledReadingId3));
-    }
-
-
-    private SatelliteEntity createEntity(UUID id) {
-        var entity = new SatelliteEntity();
-        entity.setId(id);
-        entity.setReadingFrequency(new Frequency(TimeUnit.MINUTES, 5L));
-        entity.setActive(true);
-        entity.setType(SatelliteType.WEATHER);
-        entity.setZones(
-                List.of(
-                        new Zone(
-                                new Coordinate(Math.random() * 10, Math.random() * 100),
-                                new Coordinate(Math.random() * 10, Math.random() * 100)
-                        )
-                )
-        );
-
-        return entity;
     }
 }

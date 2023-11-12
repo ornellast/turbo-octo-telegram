@@ -1,5 +1,6 @@
 package com.dnws.wakandaspaceagencyservice.reader.impl;
 
+import com.dnws.wakandaspaceagencyservice.TestUtils;
 import com.dnws.wakandaspaceagencyservice.model.Coordinate;
 import com.dnws.wakandaspaceagencyservice.model.WeatherData;
 import com.dnws.wakandaspaceagencyservice.model.Zone;
@@ -34,18 +35,9 @@ class InfraredReaderTest {
     @Test
     void read_shouldProduceOutput() {
         // Given
-        Zone zone1 = new Zone(
-                new Coordinate(Math.random() * 10, Math.random() * 100),
-                new Coordinate(Math.random() * 10, Math.random() * 100)
-        );
-        Zone zone2 = new Zone(
-                new Coordinate(Math.random() * 10, Math.random() * 100),
-                new Coordinate(Math.random() * 10, Math.random() * 100)
-        );
-        Zone zone3 = new Zone(
-                new Coordinate(Math.random() * 10, Math.random() * 100),
-                new Coordinate(Math.random() * 10, Math.random() * 100)
-        );
+        Zone zone1 = TestUtils.createZone();
+        Zone zone2 = TestUtils.createZone();
+        Zone zone3 = TestUtils.createZone();
         var zones = new ArrayList<>(List.of(zone1, zone2, zone3));
 
         var reader = new InfraredReader(zones);
