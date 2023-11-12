@@ -8,12 +8,17 @@ import com.dnws.wakandaspaceagencyservice.persistence.repositories.SatelliteRepo
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -25,6 +30,9 @@ class WeatherReadTaskExecutorTest {
 
     private final SatelliteRepository repository = mock();
     private final IPublisher<WeatherDataTopic, UUID> publisher = mock();
+
+    @Captor
+    private ArgumentCaptor<WeatherDataTopic> weatherDataTopicArgumentCaptor;
 
     @Test
     void constructor_shouldNotAcceptNullValues() {
@@ -68,6 +76,12 @@ class WeatherReadTaskExecutorTest {
 
         // Then
         verify(repository).findById(eq(id));
+        verify(publisher).publish(any(UUID.class), weatherDataTopicArgumentCaptor.capture());
+
+        var captured = weatherDataTopicArgumentCaptor.getAllValues();
+        assertEquals(id, captured.get(0).satelliteId());
+        assertArrayEquals(zoneIds.toArray(), captured.stream().map(wdt -> wdt.zone().id()).toList().toArray());
+
         verify(repository).save(eq(entity));
     }
 }

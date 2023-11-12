@@ -51,7 +51,7 @@ public class InfraredReadTaskExecutor implements ISatelliteReadTaskExecutor<Stri
         optional.ifPresent(entity -> {
             var reader = new InfraredReader(entity.getZones());
             var data = reader.read();
-            publish(data);
+            publisher.publish(data, data);
             entity.setLastReading(Instant.now());
             repository.save(entity);
         });
@@ -61,9 +61,5 @@ public class InfraredReadTaskExecutor implements ISatelliteReadTaskExecutor<Stri
         }
 
 
-    }
-
-    private void publish(String data) {
-        System.out.println("[InfraredData] Publishing data: " + data);
     }
 }
