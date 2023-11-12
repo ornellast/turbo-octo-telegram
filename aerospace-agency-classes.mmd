@@ -1,11 +1,11 @@
 classDiagram
-	class Coordinates
-		Coordinates: latitude Double
-		Coordinates: longitude Double
+	class Coordinate
+		Coordinate: latitude Double
+		Coordinate: longitude Double
 
-	class ScannedZone
-		ScannedZone : startPoint Coordinates
-		ScannedZone : endPoint Coordinates
+	class Zone
+		Zone : startPoint Coordinate
+		Zone : endPoint Coordinate
 	
 	class SatelliteType
 		<<enum>> SatelliteType
@@ -14,7 +14,7 @@ classDiagram
 
 	class SatelliteEntity
 		SatelliteEntity : id UUID
-		SatelliteEntity : scannedZones List~ScannedZone~
+		SatelliteEntity : Zones List~Zone~
 		SatelliteEntity : readingFrequency TimeUnit
 		SatelliteEntity : isActive boolean
 		SatelliteEntity : type SatelliteType
@@ -44,7 +44,7 @@ classDiagram
 		AbstractSatelliteReadingMessage : readingId UUID
 		AbstractSatelliteReadingMessage : satelliteId UUID
 		AbstractSatelliteReadingMessage : timestamp long
-		AbstractSatelliteReadingMessage : scannedZones List~ScannedZone~
+		AbstractSatelliteReadingMessage : Zones List~Zone~
 
 	class WeatherSatelliteReadingMessage
 		WeatherSatelliteReadingMessage : temperature Double

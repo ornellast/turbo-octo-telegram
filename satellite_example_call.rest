@@ -1,0 +1,66 @@
+@hostname = localhost
+@port = 8081
+@host = http://{{hostname}}:{{port}}
+@sateliteEndpoint = {{host}}/satellite
+@contentType = application/json
+
+# @name listSatellites
+GET {{sateliteEndpoint}}
+
+###
+
+# @name createSatellite
+POST {{sateliteEndpoint}}
+Content-Type: {{contentType}}
+
+{
+  "name": "OSIRIS-REX",
+  "readingFrequency": {
+    "unit": "MINUTES",
+    "value": 5
+  },
+  "isActive": true,
+  "type": "WEATHER",
+  "zones": [
+    {
+      "topLeftCoordinate": {
+        "latitude": 12.345,
+        "longitude": 54.321
+      },
+      "bottomRightCoordinate": {
+        "latitude": 2.345,
+        "longitude": 44.321
+      }
+    }
+  ]
+}
+
+###
+# @name getSatellite
+GET {{sateliteEndpoint}}/{{createSatellite.response.body.id}}
+
+
+### 
+# @name satelliteStatus
+GET {{sateliteEndpoint}}/{{createSatellite.response.body.id}}/status
+
+
+###
+# @name updateFrequency
+POST {{sateliteEndpoint}}/{{createSatellite.response.body.id}}/readingFrequency
+Content-Type: {{contentType}}
+
+{
+    "unit": "MINUTES",
+    "value": 5
+}
+
+
+### 
+# @name activate
+POST {{sateliteEndpoint}}/{{createSatellite.response.body.id}}/activate
+
+
+### 
+# @name inactivate
+POST {{sateliteEndpoint}}/{{createSatellite.response.body.id}}/inactivate
