@@ -5,6 +5,7 @@ import com.dnws.wakandaspaceagencyservice.persistence.repositories.SatelliteRepo
 import com.dnws.wakandaspaceagencyservice.reader.impl.InfraredReader;
 import com.dnws.wakandaspaceagencyservice.task.ISatelliteReadTaskExecutor;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.util.Assert;
 
 import java.time.Instant;
 import java.util.Optional;
@@ -16,9 +17,11 @@ public class InfraredReadTaskExecutor implements ISatelliteReadTaskExecutor {
     private SatelliteRepository repository;
 
 
-    public InfraredReadTaskExecutor(UUID satelliteId, SatelliteRepository service) {
+    public InfraredReadTaskExecutor(UUID satelliteId, SatelliteRepository repository) {
+        Assert.notNull(satelliteId, "satelliteId cannot be null");
+        Assert.notNull(repository, "repository cannot be null");
         this.satelliteId = satelliteId;
-        this.repository = service;
+        this.repository = repository;
     }
 
     @Override
