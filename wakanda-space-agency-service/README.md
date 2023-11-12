@@ -1,4 +1,4 @@
-B# Wakanda Aerospace Agency
+# Wakanda Aerospace Agency
 
 It's responsible for the management of Wakanda Aerospace. Launch satellites and manage them is one of its duty.
 
