@@ -1,12 +1,12 @@
-# Wakanda Aerospace Agency
+B# Wakanda Aerospace Agency
 
-It's responsible for the management of Wakanda Aerospace. Launch satellites and manage the is one of its duty.
+It's responsible for the management of Wakanda Aerospace. Launch satellites and manage them is one of its duty.
 
 ## WASA DNWS
 
 The Department of National Weather Services manage the weather satellites. In this repository you will find the top-notch
 
-### Solution's initial (very) draft
+### (very) Draft of the Initial Solution
 
 ```mermaid
 classDiagram
@@ -144,5 +144,8 @@ Here's a brief overview of the functionalities:
 ## Next to be done
 
 1. Implement a method to allow the stations to change the zone to be scanned
-2. A listener (ApplicationReady) to read the satellite table and reschedule the readings
-3. Authorization and Authentication (only Wakanda people should be able to use them)
+2. Fully test the controller. 
+3. A listener (ApplicationReady) to read the satellite table and reschedule the readings
+4. Prepare the *TaskExecutors to handle optimistic lock exception
+5. Authorization and Authentication (only Wakanda people should be able to use them)
+6. ... 
