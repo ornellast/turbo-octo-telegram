@@ -4,6 +4,7 @@ import com.dnws.wakandaspaceagencyservice.kafka.EventPublisher;
 import com.dnws.wakandaspaceagencyservice.kafka.model.WeatherDataTopic;
 import com.dnws.wakandaspaceagencyservice.kafka.publisher.IPublisher;
 import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
 
 import java.util.UUID;
 
@@ -17,6 +18,7 @@ public class WeatherDataPublisher implements IPublisher<WeatherDataTopic, UUID> 
     private UUID messageKey;
 
     public WeatherDataPublisher(EventPublisher<WeatherDataTopic> eventPublisher) {
+        Assert.notNull(eventPublisher, "eventPublisher cannot be null");
         this.eventPublisher = eventPublisher;
     }
 
@@ -40,6 +42,7 @@ public class WeatherDataPublisher implements IPublisher<WeatherDataTopic, UUID> 
 
     @Override
     public String getMessageKey() {
+        Assert.notNull(messageKey, "messageKey cannot be null");
         return messageKey.toString();
     }
 

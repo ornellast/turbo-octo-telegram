@@ -3,6 +3,7 @@ package com.dnws.wakandaspaceagencyservice.kafka.publisher.impl;
 import com.dnws.wakandaspaceagencyservice.kafka.EventPublisher;
 import com.dnws.wakandaspaceagencyservice.kafka.publisher.IPublisher;
 import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
 
 @Component
 public class InfraredDataPublisher implements IPublisher<String, String> {
@@ -14,6 +15,7 @@ public class InfraredDataPublisher implements IPublisher<String, String> {
     private String messageKey;
 
     public InfraredDataPublisher(EventPublisher<String> eventPublisher) {
+        Assert.notNull(eventPublisher, "eventPublisher cannot be null");
         this.eventPublisher = eventPublisher;
     }
 

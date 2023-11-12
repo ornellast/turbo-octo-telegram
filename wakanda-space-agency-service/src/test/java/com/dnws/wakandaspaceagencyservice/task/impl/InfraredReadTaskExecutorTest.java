@@ -16,6 +16,7 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -44,6 +45,21 @@ class InfraredReadTaskExecutorTest {
         assertThrows(IllegalArgumentException.class
                 , () -> new InfraredReadTaskExecutor(mock(), repository, null)
         );
+    }
+
+    @Test
+    void theGetters_shouldNeverReturnNull() {
+        // Given
+        var id = UUID.randomUUID();
+        var executor = new InfraredReadTaskExecutor(id, repository, publisher);
+
+        // Given
+
+        // Then
+        assertNotNull(executor.getPublisher());
+        assertNotNull(executor.getSatelliteId());
+        assertNotNull(executor.getSatelliteRepository());
+        assertNotNull(executor.getPublisher());
     }
 
     @Test
