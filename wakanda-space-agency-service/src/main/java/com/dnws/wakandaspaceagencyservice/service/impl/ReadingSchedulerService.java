@@ -96,8 +96,11 @@ public class ReadingSchedulerService implements IReadingSchedulerService {
         if (scheduledSatellites != null && !scheduledSatellites.isEmpty()) {
             scheduledSatellites
                     .forEach(scheduleId -> {
-                        scheduledReadings.get(scheduleId).schedule().cancel(true);
-                        scheduledReadings.remove(scheduleId);
+                        ScheduledData scheduledData = scheduledReadings.get(scheduleId);
+                        if (scheduledData != null) {
+                            scheduledData.schedule().cancel(true);
+                            scheduledReadings.remove(scheduleId);
+                        }
                     });
             scheduledSatellites.remove(satelliteId);
         }

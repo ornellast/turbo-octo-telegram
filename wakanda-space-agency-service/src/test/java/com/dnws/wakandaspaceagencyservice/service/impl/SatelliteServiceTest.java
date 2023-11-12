@@ -7,6 +7,8 @@ import com.dnws.wakandaspaceagencyservice.persistence.repositories.SatelliteRepo
 import com.dnws.wakandaspaceagencyservice.service.IReadingSchedulerService;
 import com.dnws.wakandaspaceagencyservice.service.ISatelliteService;
 import com.dnws.wakandaspaceagencyservice.task.ISatelliteReadTaskExecutor;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -34,10 +36,11 @@ import static org.mockito.Mockito.when;
 class SatelliteServiceTest {
 
     private final SatelliteRepository satelliteRepository = mock();
-    private final IReadingSchedulerService scheduler = mock();
+    private final IReadingSchedulerService scheduler = mock();@PersistenceContext
+    private EntityManager entityManager = mock();
 
     @InjectMocks
-    private ISatelliteService satelliteService = new SatelliteService(satelliteRepository, scheduler);
+    private ISatelliteService satelliteService = new SatelliteService(satelliteRepository, scheduler, entityManager);
 
     @Test
     void activate_shouldReturnFalse_when_satelliteIsNotFound() {

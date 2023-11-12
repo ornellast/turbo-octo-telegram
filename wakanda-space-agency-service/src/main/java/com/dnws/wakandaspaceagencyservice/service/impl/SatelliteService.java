@@ -7,6 +7,8 @@ import com.dnws.wakandaspaceagencyservice.persistence.SatelliteEntity;
 import com.dnws.wakandaspaceagencyservice.persistence.repositories.SatelliteRepository;
 import com.dnws.wakandaspaceagencyservice.service.IReadingSchedulerService;
 import com.dnws.wakandaspaceagencyservice.service.ISatelliteService;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,14 +22,23 @@ public class SatelliteService implements ISatelliteService {
 
     private final IReadingSchedulerService scheduler;
 
-    public SatelliteService(SatelliteRepository repository, IReadingSchedulerService scheduler) {
+    @PersistenceContext
+    private EntityManager entityManager;
+
+    public SatelliteService(SatelliteRepository repository, IReadingSchedulerService scheduler, EntityManager entityManager) {
         this.repository = repository;
         this.scheduler = scheduler;
+        this.entityManager = entityManager;
     }
 
     @Override
     public List<SatelliteEntity> findAll() {
         return repository.findAll();
+    }
+
+    @Override
+    public Optional<SatelliteEntity> findById(UUID satelliteId) {
+        return repository.findById(satelliteId);
     }
 
     @Override
@@ -56,7 +67,7 @@ public class SatelliteService implements ISatelliteService {
             return Optional.empty();
         }
 
-        if (satellite.getId() != null) {
+        if (satellite.getId() != null && !entityManager.contains(satellite)) {
             repository.findById(satellite.getId()).ifPresent(managed -> {
                 satellite.setVersion(managed.getVersion());
             });

@@ -21,4 +21,6 @@ public interface ISatelliteService {
     boolean updateReadingFrequency(UUID satelliteId, Frequency frequency);
 
     List<SatelliteEntity> findAll();
+
+    Optional<SatelliteEntity> findById(UUID satelliteId);
 }

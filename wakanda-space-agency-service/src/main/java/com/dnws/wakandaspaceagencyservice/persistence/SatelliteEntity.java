@@ -35,6 +35,9 @@ public final class SatelliteEntity extends BaseEntity {
     @GeneratedValue
     private UUID id;
 
+    @Column(nullable = false)
+    private String name;
+
     @Column(nullable = false, columnDefinition = "jsonb")
     @JdbcTypeCode(SqlTypes.JSON)
     private Frequency readingFrequency;
